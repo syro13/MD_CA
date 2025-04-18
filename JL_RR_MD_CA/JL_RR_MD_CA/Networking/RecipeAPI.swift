@@ -64,7 +64,31 @@ class RecipeAPI {
         }.resume()
     }
 
-    
+    // Fetch analyzed instructions
+    func fetchInstructions(for recipeID: Int, completion: @escaping ([String]) -> Void) {
+        guard let url = URL(string: "https://api.spoonacular.com/recipes/\(recipeID)/analyzedInstructions?apiKey=\(apiKey)") else {
+            completion([])
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                completion([])
+                return
+            }
+
+            do {
+                let instructionsData = try JSONDecoder().decode([Instruction].self, from: data)
+                let steps = instructionsData.first?.steps.map { $0.step } ?? []
+                DispatchQueue.main.async {
+                    completion(steps)
+                }
+            } catch {
+                print("Error decoding instructions: \(error)")
+                completion([])
+            }
+        }.resume()
+    }
 }
 
 // Supporting models for instructions
