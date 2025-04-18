@@ -37,7 +37,34 @@ class RecipeAPI {
         }.resume()
     }
 
-  
+    // Fetch recipe summary
+    func fetchSummary(for recipeID: Int, completion: @escaping (String) -> Void) {
+        guard let url = URL(string: "https://api.spoonacular.com/recipes/\(recipeID)/summary?apiKey=\(apiKey)") else {
+            completion("No summary available.")
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                completion("Error fetching summary.")
+                return
+            }
+
+            do {
+                let result = try JSONDecoder().decode([String: String].self, from: data)
+                let summaryHTML = result["summary"] ?? "No summary found."
+                let strippedSummary = summaryHTML.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+                DispatchQueue.main.async {
+                    completion(strippedSummary)
+                }
+            } catch {
+                print("Error decoding summary: \(error)")
+                completion("No summary found.")
+            }
+        }.resume()
+    }
+
+    
 }
 
 // Supporting models for instructions
