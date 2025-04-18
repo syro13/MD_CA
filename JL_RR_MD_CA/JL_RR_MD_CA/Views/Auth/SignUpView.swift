@@ -11,7 +11,6 @@ struct SignUpView: View {
     @Environment(\.dismiss) var dismiss
     @State private var name = ""
     @State private var email = ""
-    @State private var phone = ""
     @State private var password = ""
     @State private var repeatPassword = ""
     @State private var showAlert = false
@@ -33,7 +32,7 @@ struct SignUpView: View {
                     Text("Sign Up")
                         .font(.title.bold())
                         .foregroundColor(.yellow)
-                        .padding(.bottom,2)
+                        .padding(.bottom, 2)
 
                     customField(label: "Full Name", text: $name, placeholder: "Enter your name")
                     customField(label: "Email", text: $email, placeholder: "Enter your email")
@@ -80,7 +79,7 @@ struct SignUpView: View {
         }
     }
 
-    // MARK: - Custom Field
+    // MARK: - Custom Fields
     func customField(label: String, text: Binding<String>, placeholder: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
@@ -121,7 +120,7 @@ struct SignUpView: View {
 
     // MARK: - Sign up validation
     func signUp() {
-        guard !name.isEmpty, !email.isEmpty, !phone.isEmpty, !password.isEmpty else {
+        guard !name.isEmpty, !email.isEmpty, !password.isEmpty else {
             alertMessage = "All fields are required"
             showAlert = true
             return
@@ -132,7 +131,8 @@ struct SignUpView: View {
             return
         }
 
-        let user = User(name: name, email: email, phone: phone, password: password)
+        // Update this based on your current User model
+        let user = User(name: name, email: email, password: password)
         UserManager.shared.saveUser(user)
         dismiss()
     }
