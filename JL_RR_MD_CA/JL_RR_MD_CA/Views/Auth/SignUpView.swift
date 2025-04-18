@@ -14,38 +14,112 @@ struct SignUpView: View {
     @State private var phone = ""
     @State private var password = ""
     @State private var repeatPassword = ""
-    @State private var agreedToTerms = false
     @State private var showAlert = false
     @State private var alertMessage = ""
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Sign Up").font(.largeTitle).bold()
-            TextField("Full Name", text: $name).textFieldStyle(.roundedBorder)
-            TextField("Email", text: $email).textFieldStyle(.roundedBorder)
-            TextField("Phone", text: $phone).textFieldStyle(.roundedBorder)
-            SecureField("Password", text: $password).textFieldStyle(.roundedBorder)
-            SecureField("Repeat Password", text: $repeatPassword).textFieldStyle(.roundedBorder)
-            
-            Toggle("Agree to Terms & Conditions", isOn: $agreedToTerms)
-            
-            Button("Sign Up") {
-                signUp()
+        ZStack {
+            // Background image
+            VStack {
+                Image("bread1")
+                    .ignoresSafeArea()
+                Spacer()
             }
-            .buttonStyle(.borderedProminent)
-            
-            Button("Already have an account? Login") {
-                dismiss()
+
+            VStack {
+                Spacer()
+
+                VStack(spacing: 20) {
+                    Text("Sign Up")
+                        .font(.title.bold())
+                        .foregroundColor(.yellow)
+                        .padding(.bottom,2)
+
+                    customField(label: "Full Name", text: $name, placeholder: "Enter your name")
+                    customField(label: "Email", text: $email, placeholder: "Enter your email")
+                    customSecureField(label: "Password", text: $password, placeholder: "Enter your password")
+                    customSecureField(label: "Repeat Password", text: $repeatPassword, placeholder: "Repeat your password")
+
+                    // Styled Sign Up Button
+                    Button(action: {
+                        signUp()
+                    }) {
+                        Text("Sign Up")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 55)
+                            .background(Color.yellow)
+                            .foregroundColor(Color(red: 40/255, green: 39/255, blue: 39/255))
+                            .font(.system(size: 18, weight: .regular))
+                            .cornerRadius(40)
+                    }
+
+                    // Already have an account link
+                    HStack(spacing: 4) {
+                        Text("Already have an account?")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 18))
+                        Button("Login") {
+                            dismiss()
+                        }
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 18, weight: .semibold))
+                    }
+                }
+                .padding(30)
+                .background(
+                    Color(red: 40/255, green: 39/255, blue: 39/255)
+                        .clipShape(RoundedCorners(radius: 70, corners: [.topLeft, .topRight]))
+                        .ignoresSafeArea()
+                )
+            }
+            .alert("Oops", isPresented: $showAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(alertMessage)
             }
         }
-        .padding()
-        .alert("Oops", isPresented: $showAlert, actions: {
-            Button("OK", role: .cancel) { }
-        }, message: {
-            Text(alertMessage)
-        })
     }
 
+    // MARK: - Custom Field
+    func customField(label: String, text: Binding<String>, placeholder: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .foregroundColor(.white)
+                .font(.system(size: 14, weight: .semibold))
+            TextField("", text: text)
+                .placeholder(when: text.wrappedValue.isEmpty) {
+                    Text(placeholder).foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.white.opacity(0.8), lineWidth: 1)
+                )
+                .foregroundColor(.white)
+        }
+    }
+
+    func customSecureField(label: String, text: Binding<String>, placeholder: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .foregroundColor(.white)
+                .font(.system(size: 14, weight: .semibold))
+            SecureField("", text: text)
+                .placeholder(when: text.wrappedValue.isEmpty) {
+                    Text(placeholder).foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.white.opacity(0.8), lineWidth: 1)
+                )
+                .foregroundColor(.white)
+        }
+    }
+
+    // MARK: - Sign up validation
     func signUp() {
         guard !name.isEmpty, !email.isEmpty, !phone.isEmpty, !password.isEmpty else {
             alertMessage = "All fields are required"
@@ -57,14 +131,13 @@ struct SignUpView: View {
             showAlert = true
             return
         }
-        guard agreedToTerms else {
-            alertMessage = "Please agree to terms"
-            showAlert = true
-            return
-        }
 
         let user = User(name: name, email: email, phone: phone, password: password)
         UserManager.shared.saveUser(user)
         dismiss()
     }
+}
+
+#Preview {
+    SignUpView()
 }
