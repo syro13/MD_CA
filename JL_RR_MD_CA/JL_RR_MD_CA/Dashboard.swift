@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct Dashboard: View {
+    @State private var showAddFoodSheet = false
+    @StateObject private var foodStore = FoodStore()
     var body: some View {
         VStack{
             HStack {
@@ -29,7 +31,7 @@ struct Dashboard: View {
                 .cornerRadius(15)
             }
             .padding()
-            Food_Card()
+            Food_Card(foods: $foodStore.foods)
                 .padding(.horizontal)
             Spacer()
             HStack{
@@ -41,6 +43,12 @@ struct Dashboard: View {
                 Spacer()
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 60))
+                    .onTapGesture {
+                        showAddFoodSheet = true
+                    }
+                    .sheet(isPresented: $showAddFoodSheet) {
+                        AddFoodView(foods: $foodStore.foods)
+                    }
                 Spacer()
                 Image(systemName: "receipt")
                     .font(.system(size: 30))
@@ -49,6 +57,37 @@ struct Dashboard: View {
                     .font(.system(size: 30))
             }
             .padding(.horizontal)
+        }
+    }
+}
+struct AddFoodView: View {
+    @Binding var foods: [Food]
+    @Environment(\.dismiss) var dismiss
+
+    @State private var item = ""
+    @State private var emoji = ""
+    @State private var expiryDate = Date()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Item", text: $item)
+                TextField("Emoji", text: $emoji)
+                DatePicker("Expiry Date", selection: $expiryDate, displayedComponents: .date)
+
+                Button("Add") {
+                    let newFood = Food(item: item, emoji: emoji, expires: expiryDate)
+                    foods.append(newFood)
+                    dismiss()
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding()
+                .background(Color.yellow)
+                .cornerRadius(10)
+                .foregroundColor(.black)
+            }
+            .navigationTitle("Add New Food")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
