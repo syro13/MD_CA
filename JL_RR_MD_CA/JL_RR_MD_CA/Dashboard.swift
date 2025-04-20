@@ -57,7 +57,10 @@ struct Dashboard: View {
                     .font(.system(size: 30))
             }
             .padding(.horizontal)
+            .foregroundColor(.yellow)
         }
+        .background(Color(red: 40/255, green: 39/255, blue: 39/255)
+            .ignoresSafeArea())
     }
 }
 struct AddFoodView: View {

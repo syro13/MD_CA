@@ -1,5 +1,7 @@
 import SwiftUI
 
+
+
 struct Food_Card: View {
     @Binding var foods: [Food]
     
@@ -17,15 +19,17 @@ struct Food_Card: View {
             Text(food.emoji)
                 .font(.largeTitle)
                 .frame(width: 40, alignment: .leading)
+                .foregroundColor(.white)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(food.item)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white)
+                    
 
                 Text(formatDate(food.expires))
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white)
                 
                 if isExpiringSoon(food.expires) {
                     Text("Expires Soon")
@@ -47,12 +51,14 @@ struct Food_Card: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(Color(.darkGray))
         .overlay(
             RoundedRectangle(cornerRadius: 15)
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
         )
         .cornerRadius(15)
+        .background(Color(red: 40/255, green: 39/255, blue: 39/255)
+            .ignoresSafeArea())
     }
 
     func formatDate(_ date: Date) -> String {
