@@ -1,4 +1,5 @@
-	//
+
+//
 //  Splash.swift
 //  JL_RR_MD_CA
 //
@@ -8,33 +9,28 @@
 import SwiftUI
 
 struct Splash: View {
-    @State private var isActive = false
+@State private var isActive = false
 
-    var body: some View {
-        if isActive {
-            Dashboard() // Main content after splash
-        } else {
-            VStack {
-                Text("🍔") // Splash emoji or logo
-                    .font(.system(size: 100))
-                Text("Welcome to FoodieApp")
-                    .font(.title)
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.white)
-            .onAppear {
-                // Wait for 2 seconds before switching view
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation {
-                        isActive = true
+var body: some View {
+    if isActive {
+        OnBoarding()
+    } else {
+            Image("splash_image")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(red: 40/255, green: 39/255, blue: 39/255))
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        withAnimation {
+                            isActive = true
+                        }
                     }
                 }
-            }
-        }
     }
+}
 }
 
 #Preview {
-    Splash()
+Splash()
 }
