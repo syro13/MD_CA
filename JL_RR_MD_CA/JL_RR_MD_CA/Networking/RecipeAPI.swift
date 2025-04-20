@@ -9,18 +9,21 @@ import Foundation
 
 class RecipeAPI {
     static let shared = RecipeAPI()
-    private let apiKey = "2ca7a925387040fdb9fdfbcfde469ff9"
+    private let apiKey = "2ca7a925387040fdb9fdfbcfde469ff9" // Replace with your Spoonacular API key
 
     // Fetch recipes based on ingredients
     func fetchRecipes(for ingredients: [String], completion: @escaping ([Recipe]) -> Void) {
         let joinedIngredients = ingredients.joined(separator: ",")
-        guard let url = URL(string: "https://api.spoonacular.com/recipes/findByIngredients?ingredients=\(joinedIngredients)&number=6&apiKey=\(apiKey)") else {
+        guard let encoded = joinedIngredients.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://api.spoonacular.com/recipes/findByIngredients?ingredients=\(encoded)&number=10&ranking=1&ignorePantry=true&apiKey=\(apiKey)") else {
+            print("⚠️ Invalid URL")
             completion([])
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data else {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                print("❌ API error:", error?.localizedDescription ?? "Unknown")
                 completion([])
                 return
             }
@@ -31,7 +34,7 @@ class RecipeAPI {
                     completion(recipes)
                 }
             } catch {
-                print("Error decoding recipes: \(error)")
+                print("❌ Decoding error: \(error)")
                 completion([])
             }
         }.resume()
@@ -44,35 +47,36 @@ class RecipeAPI {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data else {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                print("❌ Summary API error:", error?.localizedDescription ?? "Unknown")
                 completion("Error fetching summary.")
                 return
             }
 
             do {
-                let result = try JSONDecoder().decode([String: String].self, from: data)
-                let summaryHTML = result["summary"] ?? "No summary found."
-                let strippedSummary = summaryHTML.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+                let summaryData = try JSONDecoder().decode(RecipeSummary.self, from: data)
+                let stripped = summaryData.summary.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
                 DispatchQueue.main.async {
-                    completion(strippedSummary)
+                    completion(stripped)
                 }
             } catch {
-                print("Error decoding summary: \(error)")
+                print("Error decoding summary:", error)
                 completion("No summary found.")
             }
         }.resume()
     }
 
-    // Fetch analyzed instructions
+    // Fetch recipe instructions
     func fetchInstructions(for recipeID: Int, completion: @escaping ([String]) -> Void) {
         guard let url = URL(string: "https://api.spoonacular.com/recipes/\(recipeID)/analyzedInstructions?apiKey=\(apiKey)") else {
             completion([])
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data else {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                print("❌ Instructions API error:", error?.localizedDescription ?? "Unknown")
                 completion([])
                 return
             }
@@ -90,14 +94,3 @@ class RecipeAPI {
         }.resume()
     }
 }
-
-// Supporting models for instructions
-struct Instruction: Decodable {
-    let steps: [Step]
-}
-
-struct Step: Decodable {
-    let number: Int
-    let step: String
-}
-
