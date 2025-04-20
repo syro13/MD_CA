@@ -1,5 +1,5 @@
 //
-//  RecipeView.swift
+//  RecipesView.swift
 //  JL_RR_MD_CA
 //
 //  Created by Tanmay Bhande on 18/04/25.
@@ -7,13 +7,17 @@
 
 import SwiftUI
 
+enum RecipeNavRoute: Hashable {
+    case suggestions([String])
+}
+
 struct RecipesView: View {
     @State private var ingredients: [String] = ["chocolate", "butter", "eggs"]
     @State private var selectedIngredients: Set<String> = []
-    @State private var showSuggestions = false
+    @State private var path = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             VStack {
                 Text("Select your ingredients to view recipes:")
                     .font(.headline)
@@ -39,7 +43,7 @@ struct RecipesView: View {
                 .frame(height: 200)
 
                 Button(action: {
-                    showSuggestions = true
+                    path.append(RecipeNavRoute.suggestions(Array(selectedIngredients)))
                 }) {
                     Text("GET RECIPES")
                         .frame(maxWidth: .infinity)
@@ -50,21 +54,19 @@ struct RecipesView: View {
                         .font(.headline)
                 }
                 .padding(.horizontal)
-
-                NavigationLink(
-                    destination: RecipeSuggestionsView(selectedIngredients: Array(selectedIngredients)),
-                    isActive: $showSuggestions
-                ) {
-                    EmptyView()
-                }
             }
             .padding()
             .navigationTitle("Recipes")
+            .navigationDestination(for: RecipeNavRoute.self) { route in
+                switch route {
+                case .suggestions(let selectedIngredients):
+                    RecipeSuggestionsView(selectedIngredients: selectedIngredients)
+                }
+            }
         }
     }
 }
 
 #Preview {
-    RecipeSuggestionsView(selectedIngredients: ["chocolate", "butter", "eggs"])
+    RecipesView()
 }
-
