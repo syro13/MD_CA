@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Food: Identifiable, Equatable {
+struct Food: Identifiable, Codable, Equatable {
     var id = UUID()
     var item: String
     var emoji: String

@@ -1,80 +1,88 @@
-//
-//  Food_Card.swift
-//  JL_RR_MD_CA
-//
-//  Created by Student on 14/03/2025.
-//
-
 import SwiftUI
 
+
+
 struct Food_Card: View {
-    let foods: [Food] = testData
-    var expiringSoon: [Food] {
-        foods.filter { Calendar.current.isDate($0.expires, inSameDayAs: Date()) || $0.expires <= Calendar.current.date(byAdding: .day, value: 2, to: Date())! }
-    }
-
-    var notExpiringSoon: [Food] {
-        foods.filter { !expiringSoon.contains($0) }
-    }
+    @Binding var foods: [Food]
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            if !expiringSoon.isEmpty {
-                Text("⚠️ Expiring Soon")
-                    .font(.headline)
-                    .padding(.leading)
-
-                ForEach(expiringSoon) { food in
-                    foodRow(for: food)
-                }
-            }
-
-            if !notExpiringSoon.isEmpty {
-                Text("All Items")
-                    .font(.headline)
-                    .padding(.leading)
-                    .padding(.top)
-
-                ForEach(notExpiringSoon) { food in
+        VStack {
+            if (foods.isEmpty){
+                Image("no_food")
+            }else{
+                ForEach(foods) { food in
                     foodRow(for: food)
                 }
             }
         }
     }
-}
-@ViewBuilder
-func foodRow(for food: Food) -> some View {
-    HStack {
-        Text(food.emoji)
-            .font(.largeTitle)
-            .frame(width: 40, alignment: .leading)
 
-        VStack(alignment: .leading, spacing: 4) {
-            Text(food.item)
-                .font(.headline)
-                .foregroundColor(.primary)
+    @ViewBuilder
+    func foodRow(for food: Food) -> some View {
+        HStack {
+            Text(food.emoji)
+                .font(.largeTitle)
+                .frame(width: 40, alignment: .leading)
+                .foregroundColor(.white)
 
-            Text(formatDate(food.expires))
-                .font(.caption)
-                .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(food.item)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                if isExpiringSoon(food.expires) {
+                    Text(formatDate(food.expires))
+                        .font(.subheadline)
+                        .foregroundColor(.red)
+                        .bold()
+                } else{
+                    Text(formatDate(food.expires))
+                        .font(.subheadline)
+                        .foregroundColor(.green)
+                        .bold()
+                }
+            }
+
+            Spacer()
+
+            Button(action: {
+                if let index = foods.firstIndex(of: food) {
+                    foods.remove(at: index)
+                }
+            }) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+            }
         }
-
-        Spacer()
-        Image(systemName: "trash")
-            .foregroundColor(.red)
+        .padding(20)
+        .background(Color(.darkGray))
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+        )
+        .cornerRadius(15)
     }
-    .padding(20)
-    .background(Color.white)
-    .overlay(
-        RoundedRectangle(cornerRadius: 15)
-            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-    )
-    .cornerRadius(15)
+
+    func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        return formatter.string(from: date)
+    }
+
+    func isExpiringSoon(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let expiry = calendar.startOfDay(for: date)
+        if let daysLeft = calendar.dateComponents([.day], from: today, to: expiry).day {
+            return daysLeft <= 3 && daysLeft >= 0
+        }
+        return false
+    }
 }
-func formatDate(_ date: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "dd/MM/yyyy"
-    return formatter.string(from: date)
-}
+
 #Preview {
-    Food_Card()
+    Food_Card(foods: .constant([
+        Food(item: "Apples", emoji: "🍎", expires: Date()),
+        Food(item: "Cheese", emoji: "🧀", expires: Date().addingTimeInterval(884000))
+    ]))
 }
