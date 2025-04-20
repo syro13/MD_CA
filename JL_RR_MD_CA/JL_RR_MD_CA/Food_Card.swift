@@ -75,7 +75,6 @@ func formatDate(_ date: Date) -> String {
     formatter.dateFormat = "dd/MM/yyyy"
     return formatter.string(from: date)
 }
-
 #Preview {
     Food_Card()
 }

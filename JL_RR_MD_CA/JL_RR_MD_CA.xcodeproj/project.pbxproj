@@ -398,8 +398,6 @@
 				DEVELOPMENT_ASSET_PATHS = "\"JL_RR_MD_CA/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "JL-RR-MD-CA-Info.plist";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "This app uses Face ID to authenticate you securely.\nThis app uses Face ID to authenticate you securely.\nThis app uses Face ID to authenticate you securely.\n";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,8 +426,6 @@
 				DEVELOPMENT_ASSET_PATHS = "\"JL_RR_MD_CA/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "JL-RR-MD-CA-Info.plist";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "This app uses Face ID to authenticate you securely.\nThis app uses Face ID to authenticate you securely.\nThis app uses Face ID to authenticate you securely.\n";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
