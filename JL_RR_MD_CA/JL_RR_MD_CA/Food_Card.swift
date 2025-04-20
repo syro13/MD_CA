@@ -7,8 +7,12 @@ struct Food_Card: View {
     
     var body: some View {
         VStack {
-            ForEach(foods) { food in
-                foodRow(for: food)
+            if (foods.isEmpty){
+                Image("no_food")
+            }else{
+                ForEach(foods) { food in
+                    foodRow(for: food)
+                }
             }
         }
     }
@@ -25,16 +29,16 @@ struct Food_Card: View {
                 Text(food.item)
                     .font(.headline)
                     .foregroundColor(.white)
-                    
-
-                Text(formatDate(food.expires))
-                    .font(.caption)
-                    .foregroundColor(.white)
                 
                 if isExpiringSoon(food.expires) {
-                    Text("Expires Soon")
-                        .font(.caption2)
+                    Text(formatDate(food.expires))
+                        .font(.subheadline)
                         .foregroundColor(.red)
+                        .bold()
+                } else{
+                    Text(formatDate(food.expires))
+                        .font(.subheadline)
+                        .foregroundColor(.green)
                         .bold()
                 }
             }
@@ -57,8 +61,6 @@ struct Food_Card: View {
                 .stroke(Color.gray.opacity(0.5), lineWidth: 1)
         )
         .cornerRadius(15)
-        .background(Color(red: 40/255, green: 39/255, blue: 39/255)
-            .ignoresSafeArea())
     }
 
     func formatDate(_ date: Date) -> String {
