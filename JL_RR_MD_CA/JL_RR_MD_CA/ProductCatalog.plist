@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>5061013942829</key>
+	<dict>
+		<key>emoji</key>
+		<string>🥤</string>
+		<key>name</key>
+		<string>Monster Aussie</string>
+	</dict>
+	<key>5017375533472</key>
+	<dict>
+		<key>emoji</key>
+		<string>🍬</string>
+		<key>name</key>
+		<string>Millions Strawberry</string>
+	</dict>
+	<key>5017375533489</key>
+	<dict>
+		<key>emoji</key>
+		<string>🍬</string>
+		<key>name</key>
+		<string>Millions Bubblegum</string>
+	</dict>
+</dict>
+</plist>
