@@ -15,10 +15,6 @@ struct Recipe: Identifiable, Decodable {
     let missedIngredients: [Ingredient]
 }
 
-struct Ingredient: Identifiable, Decodable {
-    let id: Int
-    let name: String
-    let original: String
-    let image: String
-}
+
+
 
