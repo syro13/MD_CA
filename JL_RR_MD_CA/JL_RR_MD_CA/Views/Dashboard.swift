@@ -10,6 +10,7 @@ import SwiftUI
 struct Dashboard: View {
     @State private var showAddFoodSheet = false
     @State private var showScanner = false
+    @State private var showRecipes = false
     @State private var expiryPromptSheet: ExpiryPromptSheet? = nil
     @State private var expiryDate = Date()
     @StateObject private var foodStore = FoodStore()
@@ -62,6 +63,9 @@ struct Dashboard: View {
                 Spacer()
                 Image(systemName: "receipt")
                     .font(.system(size: 30))
+                    .onTapGesture {
+                        showRecipes = true
+                    }
                 Spacer()
                 Image(systemName: "person.crop.circle")
                     .font(.system(size: 30))
@@ -108,7 +112,9 @@ struct Dashboard: View {
                 }
             )
         }
-
+        .fullScreenCover(isPresented: $showRecipes) {
+            RecipesView(foods: $foodStore.foods)
+        }
     }
 }
 
@@ -144,3 +150,6 @@ struct AddFoodView: View {
     }
 }
 
+#Preview {
+    Dashboard()
+}
