@@ -12,51 +12,96 @@ enum RecipeNavRoute: Hashable {
 }
 
 struct RecipesView: View {
-    @State private var ingredients: [String] = ["chocolate", "butter", "eggs"]
+    @Binding var foods: [Food]
     @State private var selectedIngredients: Set<String> = []
     @State private var path = NavigationPath()
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack(path: $path) {
-            VStack {
-                Text("Select your ingredients to view recipes:")
-                    .font(.headline)
-                    .padding()
+            VStack{
+            
+                ZStack(alignment: .top) {
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(Color.yellow)
+                        .frame(height: 150)
+                        .ignoresSafeArea(edges: .top)
 
-                List {
-                    ForEach(ingredients, id: \.self) { ingredient in
-                        HStack {
-                            Text(ingredient.capitalized)
-                            Spacer()
-                            Image(systemName: selectedIngredients.contains(ingredient) ? "checkmark.circle.fill" : "circle")
-                                .onTapGesture {
-                                    if selectedIngredients.contains(ingredient) {
-                                        selectedIngredients.remove(ingredient)
-                                    } else {
-                                        selectedIngredients.insert(ingredient)
-                                    }
-                                }
+                    HStack{
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack (spacing: 0) {
+                                Image(systemName: "chevron.left")
+                                Text("BACK")
+                            }
+                            .foregroundColor(.black)
+                            .font(.headline)
                         }
-                        .padding(.vertical, 5)
-                    }
-                }
-                .frame(height: 200)
 
+                        Spacer()
+
+                        Text("Recipes")
+                            .font(.largeTitle)
+                            .bold()
+                            .foregroundColor(.black)
+                        
+                        Spacer()
+                        Spacer()
+                        
+                        Image(systemName: "bell.fill")
+                            .foregroundColor(.black)
+                            .font(.title2)
+                    }
+                    .padding(30)
+                }
+                    
+                HStack {
+                    Spacer()
+                    Text("Select your ingredients to view recipes:")
+                        .font(.headline)
+                        .padding()
+                    Spacer()
+                }
+                .background(Color.yellow)
+                .cornerRadius(20)
+                .offset(y: -30)
+                .padding(.horizontal)
+                
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(foods, id: \.self) { food in
+                            SelectableFoodCard(
+                                food: food,
+                                isSelected: selectedIngredients.contains(food.item)
+                            ) {
+                                if selectedIngredients.contains(food.item) {
+                                    selectedIngredients.remove(food.item)
+                                } else {
+                                    selectedIngredients.insert(food.item)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
+           
                 Button(action: {
                     path.append(RecipeNavRoute.suggestions(Array(selectedIngredients)))
                 }) {
-                    Text("GET RECIPES")
+                    Text("GET  RECIPES")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.yellow)
                         .foregroundColor(.black)
-                        .cornerRadius(40)
                         .font(.headline)
+                        .cornerRadius(30)
+                        .padding(.horizontal)
+                        .padding(.top)
                 }
-                .padding(.horizontal)
             }
-            .padding()
-            .navigationTitle("Recipes")
+            .background(Color(red: 40/255, green: 39/255, blue: 39/255))
             .navigationDestination(for: RecipeNavRoute.self) { route in
                 switch route {
                 case .suggestions(let selectedIngredients):
@@ -67,6 +112,11 @@ struct RecipesView: View {
     }
 }
 
+
 #Preview {
-    RecipesView()
+    RecipesView(foods: .constant([
+        Food(item: "Chocolate", emoji: "🍫", expires: Date().addingTimeInterval(86400 * 2)),
+        Food(item: "Butter", emoji: "🧈", expires: Date().addingTimeInterval(86400 * 5)),
+        Food(item: "Eggs", emoji: "🥚", expires: Date().addingTimeInterval(-86400 * 3))
+    ]))
 }
