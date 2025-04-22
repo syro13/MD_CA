@@ -18,7 +18,6 @@ struct RecipeSuggestionsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Header
             ZStack(alignment: .top) {
                 RoundedRectangle(cornerRadius: 30)
                     .fill(Color.yellow)
@@ -54,7 +53,6 @@ struct RecipeSuggestionsView: View {
                 .padding(30)
             }
 
-            // Content
             ScrollView {
                 if isLoading {
                     ProgressView("Loading recipes...")
@@ -84,27 +82,28 @@ struct RecipeSuggestionsView: View {
                                             ProgressView()
                                         }
                                     }
-                                    .frame(height: 120)
+                                    .frame(height: 130)
                                     .clipped()
                                     .cornerRadius(10)
 
                                     Text(recipe.title)
-                                        .foregroundColor(.black)
+                                        .foregroundColor(.white)
                                         .font(.caption)
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
-                                        .padding(.horizontal, 5)
+                                        .padding()
                                 }
-                                .background(Color.white)
+                                .background(Color(.darkGray))
                                 .cornerRadius(12)
                                 .shadow(radius: 1)
-                                .padding(5)
+                                .padding(.horizontal)
                             }
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
             }
+            .offset(y: -20)
         }
         .background(Color(red: 40/255, green: 39/255, blue: 39/255))
         .onAppear {
