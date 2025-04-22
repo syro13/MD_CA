@@ -9,21 +9,21 @@ import Foundation
 
 class RecipeAPI {
     static let shared = RecipeAPI()
-    private let apiKey = "2ca7a925387040fdb9fdfbcfde469ff9" // Replace with your Spoonacular API key
+    private let apiKey = "2ca7a925387040fdb9fdfbcfde469ff9"
 
     // Fetch recipes based on ingredients
     func fetchRecipes(for ingredients: [String], completion: @escaping ([Recipe]) -> Void) {
         let joinedIngredients = ingredients.joined(separator: ",")
         guard let encoded = joinedIngredients.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "https://api.spoonacular.com/recipes/findByIngredients?ingredients=\(encoded)&number=10&ranking=1&ignorePantry=true&apiKey=\(apiKey)") else {
-            print("⚠️ Invalid URL")
+            print("Invalid URL")
             completion([])
             return
         }
 
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
-                print("❌ API error:", error?.localizedDescription ?? "Unknown")
+                print("API error:", error?.localizedDescription ?? "Unknown")
                 completion([])
                 return
             }
@@ -34,7 +34,7 @@ class RecipeAPI {
                     completion(recipes)
                 }
             } catch {
-                print("❌ Decoding error: \(error)")
+                print("Decoding error: \(error)")
                 completion([])
             }
         }.resume()
@@ -49,7 +49,7 @@ class RecipeAPI {
 
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, error == nil else {
-                print("❌ Summary API error:", error?.localizedDescription ?? "Unknown")
+                print("Summary API error:", error?.localizedDescription ?? "Unknown")
                 completion("Error fetching summary.")
                 return
             }
@@ -76,7 +76,7 @@ class RecipeAPI {
 
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, error == nil else {
-                print("❌ Instructions API error:", error?.localizedDescription ?? "Unknown")
+                print("Instructions API error:", error?.localizedDescription ?? "Unknown")
                 completion([])
                 return
             }
