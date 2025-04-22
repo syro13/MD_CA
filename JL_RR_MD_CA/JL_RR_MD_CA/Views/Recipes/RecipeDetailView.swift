@@ -11,57 +11,107 @@ struct RecipeDetailView: View {
     let recipe: Recipe
     @State private var summary: String = ""
     @State private var instructions: [String] = []
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                AsyncImage(url: URL(string: recipe.image)) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } else if phase.error != nil {
-                        Color.red
-                    } else {
-                        ProgressView()
-                    }
-                }
-                .frame(height: 200)
-                .clipped()
-                .cornerRadius(12)
+        VStack(spacing: 0) {
+            // Header
+            ZStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Color.yellow)
+                    .frame(height: 150)
+                    .ignoresSafeArea(edges: .top)
 
-                Text("Ingredients:")
-                    .font(.headline)
+                HStack{
+                    Button {
+                        dismiss()
+                    } label: {
+                        HStack (spacing: 0) {
+                            Image(systemName: "chevron.left")
+                            Text("BACK")
+                        }
+                        .foregroundColor(.black)
+                        .font(.headline)
+                    }
+
+                    Spacer()
+
+                    Text("Instructions")
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    Spacer()
+                    
+                    Image(systemName: "bell.fill")
+                        .foregroundColor(.black)
+                        .font(.title2)
+                }
+                .padding(30)
+            }
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Recipe Title Card
+                    Text(recipe.title)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.yellow)
+                        .cornerRadius(20)
+                        .padding(.horizontal)
+
+                    // Recipe Image
+                    AsyncImage(url: URL(string: recipe.image)) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } else if phase.error != nil {
+                            Color.red
+                        } else {
+                            ProgressView()
+                        }
+                    }
+                    .frame(height: 200)
+                    .cornerRadius(20)
                     .padding(.horizontal)
 
-                ForEach(recipe.usedIngredients + recipe.missedIngredients) { ing in
-                    Text("• \(ing.original)")
-                        .padding(.horizontal)
-                        .foregroundColor(.secondary)
-                }
+                    // Ingredients Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Ingredients:")
+                            .font(.headline)
+                            .foregroundColor(.white)
 
-                if !summary.isEmpty {
-                    Text("Summary:")
-                        .font(.headline)
-                        .padding([.top, .horizontal])
-                    Text(summary)
-                        .padding(.horizontal)
-                        .foregroundColor(.primary)
-                }
+                        ForEach(recipe.usedIngredients + recipe.missedIngredients) { ing in
+                            Text("• \(ing.original)")
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.horizontal)
 
-                if !instructions.isEmpty {
-                    Text("Instructions:")
-                        .font(.headline)
-                        .padding([.top, .horizontal])
-                    ForEach(instructions.indices, id: \.self) { i in
-                        Text("\(i + 1). \(instructions[i])")
-                            .padding(.horizontal)
-                            .padding(.bottom, 2)
+                    // Instructions Section
+                    if !instructions.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Recipe:")
+                                .font(.headline)
+                                .foregroundColor(.white)
+
+                            ForEach(instructions.indices, id: \.self) { i in
+                                Text(instructions[i])
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                 }
+                .padding(.top, 10)
             }
+            .offset(y: -50)
         }
-        .navigationTitle(recipe.title)
+        .background(Color(red: 40/255, green: 39/255, blue: 39/255))
         .onAppear(perform: loadDetails)
     }
 
