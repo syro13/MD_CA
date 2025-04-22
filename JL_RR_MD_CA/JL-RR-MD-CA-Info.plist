@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+<dict>
+	<key>NSLocationWhenInUseUsageDescription
+NSLocationWhenInUseUsageDescription
+NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to find nearby donation centers like food banks, shelters, and churches.
+We need your location to find nearby donation centers like food banks, shelters, and churches.
+We need your location to find near by donation centers like food banks, shelters, and churches.</string>
+</dict>
 </plist>
