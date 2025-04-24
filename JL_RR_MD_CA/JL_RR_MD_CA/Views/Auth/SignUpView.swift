@@ -20,7 +20,7 @@ struct SignUpView: View {
         ZStack {
             // Background image
             VStack {
-                Image("bread1")
+                Image("bread")
                     .ignoresSafeArea()
                 Spacer()
             }

@@ -20,7 +20,6 @@ struct DonationView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
             ZStack(alignment: .top) {
                 RoundedRectangle(cornerRadius: 30)
                     .fill(Color.yellow)
@@ -41,6 +40,7 @@ struct DonationView: View {
 
                     Spacer()
 
+
                     Text("Donation")
                         .font(.largeTitle)
                         .bold()
@@ -48,14 +48,9 @@ struct DonationView: View {
                     
                     Spacer()
                     Spacer()
-                    
-                    Image(systemName: "bell.fill")
-                        .foregroundColor(.black)
-                        .font(.title2)
                 }
                 .padding(30)
             }
-            // Address input
             VStack(alignment: .leading, spacing: 12) {
                 Text("Enter your address")
                     .foregroundColor(.white)
@@ -116,7 +111,6 @@ struct DonationView: View {
                 }
                 .padding(.horizontal)
             }
-            .offset(y: -45)
         }
         .background(Color(red: 40/255, green: 39/255, blue: 39/255))
     }
