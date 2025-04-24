@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import MapKit
+import UserNotifications
 
 struct Dashboard: View {
     @State private var showAddFoodSheet = false
@@ -14,17 +16,40 @@ struct Dashboard: View {
     @State private var expiryPromptSheet: ExpiryPromptSheet? = nil
     @State private var expiryDate = Date()
     @StateObject private var foodStore = FoodStore()
+    @State private var showDonation = false
+    @StateObject private var locationManager = LocationManager()
+    @StateObject private var donationController = DonationController()
+    @State private var address: String = "Dublin"
+    @State private var region = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 53.3498, longitude: -6.2603),
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+    )
 
     var body: some View {
-        VStack {
-            HStack {
-                HStack(spacing: 10) {
-                    Image(systemName: "magnifyingglass")
+        VStack(spacing: 0) {
+            // Header
+            ZStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Color.yellow)
+                    .frame(height: 150)
+                    .ignoresSafeArea(edges: .top)
+
+                HStack {
+                    Text("Dashboard")
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.black)
+
+                    Spacer()
+                    Spacer()
+
+                    Image(systemName: "bell.badge")
                         .font(.system(size: 30))
                         .foregroundColor(.black)
-                    Text("Find your food")
-                        .foregroundColor(.black)
-                    Spacer()
+                        .onTapGesture {
+                            requestNotificationPermission()
+                            scheduleTestNotification()
+                        }
                     Image(systemName: "barcode.viewfinder")
                         .font(.system(size: 30))
                         .foregroundColor(.black)
@@ -32,21 +57,17 @@ struct Dashboard: View {
                             showScanner = true
                         }
                 }
-                .padding(.horizontal)
-                .frame(height: 50)
-                .background(Color.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                )
-                .cornerRadius(15)
+                .padding(30)
             }
-            .padding()
 
-            Food_Card(foods: $foodStore.foods)
-                .padding(.horizontal)
-
-            Spacer()
+            ScrollView {
+                VStack(spacing: 16) {
+                    Food_Card(foods: $foodStore.foods)
+                }
+                .padding(.trailing, 40)
+                .padding(.bottom, 20)
+                .padding(10)
+            }
 
             HStack {
                 Image(systemName: "list.bullet")
@@ -54,6 +75,9 @@ struct Dashboard: View {
                 Spacer()
                 Image(systemName: "shippingbox")
                     .font(.system(size: 30))
+                    .onTapGesture {
+                        showDonation = true
+                    }
                 Spacer()
                 Image(systemName: "plus.circle.fill")
                     .font(.system(size: 60))
@@ -71,6 +95,7 @@ struct Dashboard: View {
                     .font(.system(size: 30))
             }
             .padding(.horizontal)
+            .padding(.bottom, 10)
             .foregroundColor(.yellow)
         }
         .background(Color(red: 40/255, green: 39/255, blue: 39/255)
@@ -78,20 +103,50 @@ struct Dashboard: View {
         .sheet(isPresented: $showAddFoodSheet) {
             AddFoodView(foods: $foodStore.foods)
         }
-        .sheet(isPresented: $showScanner) {
-            ScannerView { scannedCode in
-                print("Scanned barcode: \(scannedCode)")
-                let productList = ProductLookup.loadProducts()
-                if let matchedProduct = productList[scannedCode] {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        expiryPromptSheet = ExpiryPromptSheet(product: matchedProduct)
+        .fullScreenCover(isPresented: $showScanner) {
+            ZStack {
+                ScannerView { scannedCode in
+                    print("Scanned barcode: \(scannedCode)")
+                    let productList = ProductLookup.loadProducts()
+                    if let matchedProduct = productList[scannedCode] {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            expiryPromptSheet = ExpiryPromptSheet(product: matchedProduct)
+                        }
+                    } else {
+                        print("No match for barcode: \(scannedCode)")
                     }
+                    showScanner = false
                 }
-                else {
-                    print("No match for barcode: \(scannedCode)")
+
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showScanner = false
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.white)
+                                .padding()
+                        }
+                    }
+                    Spacer()
                 }
-                showScanner = false
+
+                VStack(spacing: 20) {
+                    Text("Scan a barcode")
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.yellow, lineWidth: 4)
+                        .frame(width: 250, height: 150)
+
+                    Spacer()
+                }
+                .padding(.top, 100)
             }
+            .background(Color(red: 40/255, green: 39/255, blue: 39/255).ignoresSafeArea())
         }
         .sheet(item: $expiryPromptSheet) { sheet in
             ExpiryPromptView(
@@ -102,6 +157,7 @@ struct Dashboard: View {
 
                     if !foodStore.foods.contains(where: { $0.item == newFood.item }) {
                         foodStore.foods.append(newFood)
+                        scheduleExpiryNotification(for: newFood)
                     }
 
                     expiryPromptSheet = nil
@@ -114,6 +170,14 @@ struct Dashboard: View {
         }
         .fullScreenCover(isPresented: $showRecipes) {
             RecipesView(foods: $foodStore.foods)
+        }
+        .fullScreenCover(isPresented: $showDonation) {
+            DonationView(
+                locationManager: locationManager,
+                donationController: donationController,
+                address: $address,
+                region: $region
+            )
         }
     }
 }
@@ -136,6 +200,10 @@ struct AddFoodView: View {
                 Button("Add") {
                     let newFood = Food(item: item, emoji: emoji, expires: expiryDate)
                     foods.append(newFood)
+                    if foods.count == 1 {
+                        requestNotificationPermission()
+                    }
+                    scheduleExpiryNotification(for: newFood)
                     dismiss()
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -149,6 +217,59 @@ struct AddFoodView: View {
         }
     }
 }
+func requestNotificationPermission() {
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        if let error = error {
+            print("Notification permission error: \(error.localizedDescription)")
+        }
+    }
+}
+func scheduleExpiryNotification(for food: Food) {
+    let content = UNMutableNotificationContent()
+    content.title = "⏰ Food Expiry Reminder"
+    content.body = "\(food.item) is expiring soon. Use it before it goes to waste!"
+    content.sound = UNNotificationSound.default
+
+    let calendar = Calendar.current
+    if let notificationDate = calendar.date(byAdding: .day, value: -1, to: food.expires) {
+        let components = calendar.dateComponents([.year, .month, .day], from: notificationDate)
+        var triggerDate = DateComponents()
+        triggerDate.year = components.year
+        triggerDate.month = components.month
+        triggerDate.day = components.day
+        triggerDate.hour = 10
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
+        let request = UNNotificationRequest(identifier: "\(food.id)", content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Failed to schedule notification: \(error)")
+            }
+        }
+    }
+}
+
+func scheduleTestNotification() {
+    let content = UNMutableNotificationContent()
+    content.title = "🧪 Test Notification"
+    content.body = "This is a test notification!"
+    content.sound = UNNotificationSound.default
+
+    // Trigger in 10 seconds
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+
+    let request = UNNotificationRequest(identifier: "testNotification", content: content, trigger: trigger)
+
+    UNUserNotificationCenter.current().add(request) { error in
+        if let error = error {
+            print("❌ Error scheduling test notification: \(error)")
+        } else {
+            print("✅ Test notification scheduled")
+        }
+    }
+}
+
 
 #Preview {
     Dashboard()
