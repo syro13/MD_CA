@@ -48,10 +48,6 @@ struct RecipesView: View {
                         
                         Spacer()
                         Spacer()
-                        
-                        Image(systemName: "bell.fill")
-                            .foregroundColor(.black)
-                            .font(.title2)
                     }
                     .padding(30)
                 }
@@ -60,6 +56,7 @@ struct RecipesView: View {
                     Spacer()
                     Text("Select your ingredients to view recipes:")
                         .font(.headline)
+                        .foregroundStyle(.black)
                         .padding()
                     Spacer()
                 }
@@ -106,6 +103,7 @@ struct RecipesView: View {
                 switch route {
                 case .suggestions(let selectedIngredients):
                     RecipeSuggestionsView(selectedIngredients: selectedIngredients)
+                        .navigationBarHidden(true)
                 }
             }
         }

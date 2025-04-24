@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct Splash: View {
+    @AppStorage("isLoggedIn") var isLoggedIn = false
     @State private var isActive = false
+    @Binding var path: NavigationPath
 
     var body: some View {
         if isActive {
-            OnBoarding()
+            if isLoggedIn{
+                Dashboard()
+            } else {
+                OnBoarding(path: $path)
+            }
         } else {
                 Image("splash_image")
                     .resizable()
@@ -31,5 +37,5 @@ struct Splash: View {
 }
 
 #Preview {
-    Splash()
+    Splash(path: .constant(NavigationPath()))
 }

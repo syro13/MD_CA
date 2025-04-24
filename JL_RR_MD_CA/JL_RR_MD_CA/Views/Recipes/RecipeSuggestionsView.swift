@@ -45,10 +45,6 @@ struct RecipeSuggestionsView: View {
 
                     Spacer()
                     Spacer()
-
-                    Image(systemName: "bell.fill")
-                        .foregroundColor(.black)
-                        .font(.title2)
                 }
                 .padding(30)
             }
@@ -69,7 +65,8 @@ struct RecipeSuggestionsView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15) {
                         ForEach(recipes) { recipe in
-                            NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
+                            NavigationLink(destination: RecipeDetailView(recipe: recipe)
+                                .navigationBarHidden(true)) {
                                 VStack {
                                     AsyncImage(url: URL(string: recipe.image)) { phase in
                                         if let image = phase.image {

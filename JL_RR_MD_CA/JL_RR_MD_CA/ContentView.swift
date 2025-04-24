@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var path = NavigationPath()
     var body: some View {
-        NavigationStack {
-            Dashboard()
+        NavigationStack(path: $path) {
+            Splash(path: $path)
                 .navigationBarHidden(true)
         }
     }

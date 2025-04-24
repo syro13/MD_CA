@@ -43,17 +43,12 @@ struct RecipeDetailView: View {
                     
                     Spacer()
                     Spacer()
-                    
-                    Image(systemName: "bell.fill")
-                        .foregroundColor(.black)
-                        .font(.title2)
                 }
                 .padding(30)
             }
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Recipe Title Card
                     Text(recipe.title)
                         .font(.headline)
                         .foregroundColor(.black)
@@ -63,7 +58,6 @@ struct RecipeDetailView: View {
                         .cornerRadius(20)
                         .padding(.horizontal)
 
-                    // Recipe Image
                     AsyncImage(url: URL(string: recipe.image)) { phase in
                         if let image = phase.image {
                             image
@@ -79,7 +73,6 @@ struct RecipeDetailView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
 
-                    // Ingredients Section
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Ingredients:")
                             .font(.headline)
@@ -92,7 +85,6 @@ struct RecipeDetailView: View {
                     }
                     .padding(.horizontal)
 
-                    // Instructions Section
                     if !instructions.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Recipe:")
