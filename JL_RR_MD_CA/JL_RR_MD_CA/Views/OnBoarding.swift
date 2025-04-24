@@ -17,26 +17,22 @@ struct OnboardingScreen: Identifiable {
 }
 
 enum OnboardingDestination: Hashable {
-    case dashboard
+    case loginview
 }
 
 struct OnBoarding: View {
     @State private var currentIndex = 0
-    @State private var path = NavigationPath()
+    @Binding var path: NavigationPath
 
     let screens: [OnboardingScreen] = [
-        OnboardingScreen(imageName: "bread1", title: "Welcome to Crumbs", subtitle: "Because every bite matters.\nLet’s fight food waste together!"),
-        OnboardingScreen(imageName: "bread1", title: "Scan & Save", subtitle: "Scan products and track expiry.\nAvoid unnecessary waste."),
-        OnboardingScreen(imageName: "bread1", title: "Smart Recipes", subtitle: "Get recipe suggestions\nwith leftovers you already have."),
-        OnboardingScreen(imageName: "bread1", title: "Share or Donate", subtitle: "Donate food to local banks,\ncharities, or churches.")
+        OnboardingScreen(imageName: "bread", title: "Welcome to Crumbs", subtitle: "Because every bite matters.\nLet’s fight food waste together!"),
+        OnboardingScreen(imageName: "scan", title: "Scan & Save", subtitle: "Scan products and track expiry.\nAvoid unnecessary waste."),
+        OnboardingScreen(imageName: "recipe", title: "Smart Recipes", subtitle: "Get recipe suggestions\nwith leftovers you already have."),
+        OnboardingScreen(imageName: "donate", title: "Share or Donate", subtitle: "Donate food to local banks,\ncharities, or churches.")
     ]
 
     var body: some View {
-        NavigationStack(path: $path) {
             ZStack {
-                Color(red: 40/255, green: 39/255, blue: 39/255)
-                    .ignoresSafeArea()
-
                 VStack {
                     TabView(selection: $currentIndex) {
                         ForEach(Array(screens.enumerated()), id: \.offset) { index, screen in
@@ -74,7 +70,7 @@ struct OnBoarding: View {
                                 if currentIndex < screens.count - 1 {
                                     currentIndex += 1
                                 } else {
-                                    path.append(OnboardingDestination.dashboard)
+                                    path.append(OnboardingDestination.loginview)
                                 }
                             }
                         }
@@ -88,14 +84,17 @@ struct OnBoarding: View {
                     .padding(.horizontal)
                 }
             }
+            .padding(.bottom, 50)
+            .background(Color(red: 40/255, green: 39/255, blue: 39/255)
+                .ignoresSafeArea())
             .navigationDestination(for: OnboardingDestination.self) { destination in
                 switch destination {
-                case .dashboard:
-                    Dashboard()
+                case .loginview:
+                    LoginView(path: $path)
+                        .navigationBarHidden(true)
                 }
             }
         }
-    }
 }
 
 
@@ -103,11 +102,14 @@ struct OnboardingSlide: View {
     let screen: OnboardingScreen
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack{
             Image(screen.imageName)
+                .resizable()
+                .aspectRatio(440/519, contentMode: .fill)
+                .clipped()
                 .ignoresSafeArea(.all)
-
-            VStack(spacing: 20) {
+                
+            VStack{
                 Text(screen.title)
                     .font(.title)
                     .foregroundColor(.yellow)
@@ -117,7 +119,6 @@ struct OnboardingSlide: View {
                     .multilineTextAlignment(.center)
                     .foregroundColor(.white)
             }
-            .padding(.top, 24)
             .background(Color(red: 40/255, green: 39/255, blue: 39/255))
         }
         .background(Color(red: 40/255, green: 39/255, blue: 39/255))
@@ -129,5 +130,5 @@ struct OnboardingSlide: View {
 
 
 #Preview {
-    OnBoarding()
+    OnBoarding(path: .constant(NavigationPath()))
 }
