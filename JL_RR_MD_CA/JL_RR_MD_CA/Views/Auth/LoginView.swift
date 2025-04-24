@@ -16,16 +16,18 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var path = NavigationPath()
+    @Binding var path: NavigationPath
 
     @ObservedObject var userManager = UserManager.shared
+    
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @State private var rememberMe = false
 
     var body: some View {
-        NavigationStack(path: $path) {
             ZStack {
                 // Background Image
                 VStack{
-                    Image("bread1")
+                    Image("bread")
                         .ignoresSafeArea(.all)
                     Spacer()
                 }
@@ -81,8 +83,10 @@ struct LoginView: View {
                         
                         // Remember Me (Optional)
                         HStack {
-                            Image(systemName: "square")
-                            Text("Remember me")
+                            Toggle("Remember me", isOn: $rememberMe)
+                                .toggleStyle(CheckboxToggleStyle())
+                                .foregroundColor(.gray)
+                                .padding(.vertical, 20)
                             Spacer()
                         }
                         .foregroundColor(.gray)
@@ -119,7 +123,8 @@ struct LoginView: View {
                             Text("Don't have an account?")
                                 .foregroundColor(.gray)
                                 .font(.system(size: 18))
-                            NavigationLink("Sign Up", destination: SignUpView())
+                            NavigationLink("Sign Up", destination: SignUpView()
+                                .navigationBarHidden(true))
                                 .foregroundColor(.yellow)
                                 .font(.system(size: 18, weight: .semibold))
                         }
@@ -141,14 +146,17 @@ struct LoginView: View {
             .navigationDestination(for: AuthNavigation.self) { route in
                 switch route {
                     case .dashboard: Dashboard()
+                        .navigationBarHidden(true)
                 }
             }
-        }
     }
 
     func login() {
         let isValid = userManager.validate(email: email, password: password)
         if isValid {
+            if rememberMe {
+                isLoggedIn = true
+            }
             path.append(AuthNavigation.dashboard)
         } else {
             alertMessage = "Invalid credentials"
@@ -157,6 +165,21 @@ struct LoginView: View {
     }
 }
 
+struct CheckboxToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button(action: {
+            configuration.isOn.toggle()
+        }) {
+            HStack {
+                Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
+                    .foregroundColor(configuration.isOn ? .yellow : .gray)
+                configuration.label
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 #Preview {
-    LoginView()
+    LoginView(path: .constant(NavigationPath()))
 }
