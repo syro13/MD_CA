@@ -24,6 +24,8 @@ struct Dashboard: View {
         center: CLLocationCoordinate2D(latitude: 53.3498, longitude: -6.2603),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @State private var showLogoutAlert = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -91,8 +93,22 @@ struct Dashboard: View {
                         showRecipes = true
                     }
                 Spacer()
-                Image(systemName: "person.crop.circle")
+                Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 30))
+                    .onTapGesture {
+                        showLogoutAlert = true
+                    }
+                    .alert("Log Out", isPresented: $showLogoutAlert) {
+                        Button("Log Out", role: .destructive) {
+                            isLoggedIn = false
+
+                            KeychainHelper.delete(service: "CrumbsLogin", account: "user")
+
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("Are you sure you want to log out?")
+                    }
             }
             .padding(.horizontal)
             .padding(.bottom, 10)

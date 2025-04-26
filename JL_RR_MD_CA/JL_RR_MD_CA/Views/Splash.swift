@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Splash: View {
     @AppStorage("isLoggedIn") var isLoggedIn = false
+    @AppStorage("seenOnboarding") var seenOnboarding = false
     @State private var isActive = false
     @Binding var path: NavigationPath
 
@@ -17,7 +18,11 @@ struct Splash: View {
             if isLoggedIn{
                 Dashboard()
             } else {
+                if seenOnboarding{
+                    LoginView(path: $path)
+                } else {
                 OnBoarding(path: $path)
+                }
             }
         } else {
                 Image("splash_image")

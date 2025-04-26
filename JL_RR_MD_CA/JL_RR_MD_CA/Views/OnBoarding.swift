@@ -23,6 +23,7 @@ enum OnboardingDestination: Hashable {
 struct OnBoarding: View {
     @State private var currentIndex = 0
     @Binding var path: NavigationPath
+    @AppStorage("seenOnboarding") var seenOnboarding = false
 
     let screens: [OnboardingScreen] = [
         OnboardingScreen(imageName: "bread", title: "Welcome to Crumbs", subtitle: "Because every bite matters.\nLet’s fight food waste together!"),
@@ -71,6 +72,7 @@ struct OnBoarding: View {
                                     currentIndex += 1
                                 } else {
                                     path.append(OnboardingDestination.loginview)
+                                    seenOnboarding = true
                                 }
                             }
                         }
