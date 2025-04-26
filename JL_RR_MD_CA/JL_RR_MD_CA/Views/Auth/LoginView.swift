@@ -155,6 +155,10 @@ struct LoginView: View {
         let isValid = userManager.validate(email: email, password: password)
         if isValid {
             if rememberMe {
+                let credentials = "\(email):\(password)"
+                if let data = credentials.data(using: .utf8) {
+                    KeychainHelper.save(data, service: "CrumbsLogin", account: "user")
+                }
                 isLoggedIn = true
             }
             path.append(AuthNavigation.dashboard)
@@ -163,6 +167,7 @@ struct LoginView: View {
             showAlert = true
         }
     }
+
 }
 
 struct CheckboxToggleStyle: ToggleStyle {

@@ -79,7 +79,6 @@ struct SignUpView: View {
         }
     }
 
-    // MARK: - Custom Fields
     func customField(label: String, text: Binding<String>, placeholder: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
@@ -131,11 +130,17 @@ struct SignUpView: View {
             return
         }
 
-        // Update this based on your current User model
         let user = User(name: name, email: email, password: password)
         UserManager.shared.saveUser(user)
+
+        let credentials = "\(email):\(password)"
+        if let data = credentials.data(using: .utf8) {
+            KeychainHelper.save(data, service: "CrumbsLogin", account: "user")
+        }
+
         dismiss()
     }
+
 }
 
 #Preview {
