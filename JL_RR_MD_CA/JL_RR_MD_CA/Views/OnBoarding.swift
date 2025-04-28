@@ -71,8 +71,8 @@ struct OnBoarding: View {
                                 if currentIndex < screens.count - 1 {
                                     currentIndex += 1
                                 } else {
-                                    path.append(OnboardingDestination.loginview)
                                     seenOnboarding = true
+                                    path = NavigationPath()
                                 }
                             }
                         }

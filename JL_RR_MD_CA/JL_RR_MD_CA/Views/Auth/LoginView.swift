@@ -145,22 +145,26 @@ struct LoginView: View {
             }
             .navigationDestination(for: AuthNavigation.self) { route in
                 switch route {
-                    case .dashboard: Dashboard()
+                    case .dashboard: Dashboard(path: $path)
                         .navigationBarHidden(true)
                 }
             }
     }
 
     func login() {
-        let isValid = userManager.validate(email: email, password: password)
-        if isValid {
+        if let loadedUser = userManager.loadUser(email: email),
+           loadedUser.password == password {
+            
+            userManager.currentUser = loadedUser
+            isLoggedIn = true
+            
             if rememberMe {
                 let credentials = "\(email):\(password)"
                 if let data = credentials.data(using: .utf8) {
                     KeychainHelper.save(data, service: "CrumbsLogin", account: "user")
                 }
-                isLoggedIn = true
             }
+            
             path.append(AuthNavigation.dashboard)
         } else {
             alertMessage = "Invalid credentials"

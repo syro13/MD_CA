@@ -16,7 +16,7 @@ struct Splash: View {
     var body: some View {
         if isActive {
             if isLoggedIn{
-                Dashboard()
+                Dashboard(path: $path)
             } else {
                 if seenOnboarding{
                     LoginView(path: $path)

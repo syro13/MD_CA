@@ -11,6 +11,7 @@ import LocalAuthentication
 class UserManager: ObservableObject {
     static let shared = UserManager()
     private let userKey = "savedUser"
+    @Published var currentUser: User? = nil
 
     @Published var isAuthenticated = false
 
@@ -48,6 +49,12 @@ class UserManager: ObservableObject {
         } else {
             completion(false)
         }
+    }
+    func loadUser(email: String) -> User? {
+        if let savedUser = getUser(), savedUser.email == email {
+            return savedUser
+        }
+        return nil
     }
 }
 

@@ -401,6 +401,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "JL-RR-MD-CA-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need aceess to your camera to scan product barcodes";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to use Face ID to authenticate you securely.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +433,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "JL-RR-MD-CA-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need aceess to your camera to scan product barcodes";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to use Face ID to authenticate you securely.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

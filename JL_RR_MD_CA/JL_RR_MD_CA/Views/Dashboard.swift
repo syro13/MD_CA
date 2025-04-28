@@ -10,6 +10,7 @@ import MapKit
 import UserNotifications
 
 struct Dashboard: View {
+    @Binding var path: NavigationPath
     @State private var showAddFoodSheet = false
     @State private var showScanner = false
     @State private var showRecipes = false
@@ -101,9 +102,11 @@ struct Dashboard: View {
                     .alert("Log Out", isPresented: $showLogoutAlert) {
                         Button("Log Out", role: .destructive) {
                             isLoggedIn = false
-
                             KeychainHelper.delete(service: "CrumbsLogin", account: "user")
-
+                                
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                path = NavigationPath()
+                            }
                         }
                         Button("Cancel", role: .cancel) {}
                     } message: {
@@ -288,5 +291,7 @@ func scheduleTestNotification() {
 
 
 #Preview {
-    Dashboard()
+    NavigationStack {
+        Dashboard(path: .constant(NavigationPath()))
+    }
 }
